@@ -1,11 +1,11 @@
-/****** Object:  Database [HobbyMiniERP] ******/
-CREATE DATABASE [HobbyMiniERP]
+/****** Object:  Database [MiniERP_Generic] ******/
+CREATE DATABASE [MiniERP_Generic]
 GO
 
-USE [HobbyMiniERP]
+USE [MiniERP_Generic]
 GO
 
-/****** 1. Phân hệ Phân quyền & Người dùng ******/
+/****** 1. Phân quyền & Người dùng ******/
 CREATE TABLE [dbo].[Roles](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[Name] [nvarchar](100) NOT NULL UNIQUE,
@@ -21,7 +21,6 @@ CREATE TABLE [dbo].[Users](
 	[Email] [nvarchar](256) NULL,
 	[PasswordHash] [nvarchar](max) NULL,
 	[FullName] [nvarchar](200) NULL,
-	[IsActive] [bit] NOT NULL DEFAULT (1),
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT (0)
@@ -41,8 +40,7 @@ GO
 CREATE TABLE [dbo].[Brands](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[Name] [nvarchar](200) NOT NULL UNIQUE,
-	[Country] [nvarchar](100) NULL,
-	[LogoUrl] [nvarchar](500) NULL,
+	[Description] [nvarchar](500) NULL,
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT (0)
@@ -67,14 +65,13 @@ CREATE TABLE [dbo].[Suppliers](
 	[Phone] [nvarchar](50) NULL,
 	[Email] [nvarchar](256) NULL,
 	[Address] [nvarchar](500) NULL,
-	[IsActive] [bit] NOT NULL DEFAULT (1),
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT (0)
 )
 GO
 
-/****** 3. Sản phẩm (Giản lược: Gộp Variant và Inventory vào đây) ******/
+/****** 3. Sản phẩm (Generic) ******/
 CREATE TABLE [dbo].[Products](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[CategoryId] [int] NULL,
@@ -82,15 +79,11 @@ CREATE TABLE [dbo].[Products](
 	[SKU] [nvarchar](100) NOT NULL UNIQUE,
 	[Name] [nvarchar](300) NOT NULL,
 	[Description] [nvarchar](max) NULL,
-	[SeriesName] [nvarchar](300) NULL, -- Thay bảng Series bằng cột text
-	[Scale] [nvarchar](50) NULL,
-	[Grade] [nvarchar](50) NULL,
-	[Weight] [decimal](10, 2) NULL,
+	[Unit] [nvarchar](50) NULL, -- Đơn vị tính (Cái, Thùng, Kg...)
 	[CostPrice] [decimal](18, 2) NOT NULL DEFAULT (0),
 	[RetailPrice] [decimal](18, 2) NOT NULL DEFAULT (0),
-	[StockQuantity] [int] NOT NULL DEFAULT (0), -- Quản lý tồn kho trực tiếp tại đây (1 kho)
+	[StockQuantity] [int] NOT NULL DEFAULT (0),
 	[ImageUrl] [nvarchar](500) NULL,
-	[IsActive] [bit] NOT NULL DEFAULT (1),
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT (0),
@@ -99,10 +92,10 @@ CREATE TABLE [dbo].[Products](
 )
 GO
 
-/****** 4. Khách hàng (Gộp địa chỉ vào đây) ******/
+/****** 4. Khách hàng ******/
 CREATE TABLE [dbo].[Customers](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[UserId] [int] NULL, -- Liên kết nếu khách hàng có tài khoản
+	[UserId] [int] NULL,
 	[Name] [nvarchar](200) NOT NULL,
 	[Email] [nvarchar](256) NULL,
 	[Phone] [nvarchar](50) NULL,
@@ -115,7 +108,7 @@ CREATE TABLE [dbo].[Customers](
 )
 GO
 
-/****** 5. Phân hệ Mua hàng (Purchase Orders) ******/
+/****** 5. Mua hàng (Purchase Orders) ******/
 CREATE TABLE [dbo].[PurchaseOrders](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[PONumber] [nvarchar](50) NOT NULL UNIQUE,
@@ -146,7 +139,7 @@ CREATE TABLE [dbo].[PurchaseOrderItems](
 )
 GO
 
-/****** 6. Phân hệ Bán hàng (Sales Orders) ******/
+/****** 6. Bán hàng (Sales Orders) ******/
 CREATE TABLE [dbo].[SalesOrders](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[OrderNumber] [nvarchar](50) NOT NULL UNIQUE,
@@ -193,4 +186,159 @@ CREATE TABLE [dbo].[StockMovements](
 	CONSTRAINT [FK_SM_Product] FOREIGN KEY([ProductId]) REFERENCES [dbo].[Products] ([Id]),
 	CONSTRAINT [FK_SM_User] FOREIGN KEY([CreatedBy]) REFERENCES [dbo].[Users] ([Id])
 )
+GO
+
+/****** 8. Stored Procedures - Tối ưu hóa nghiệp vụ ******/
+
+-- 8.1. SP Tạo đơn hàng và trừ kho (Sales Order)
+CREATE PROCEDURE [dbo].[sp_CreateSalesOrder]
+    @OrderNumber nvarchar(50),
+    @CustomerId int,
+    @OrderDate date,
+    @PaymentMethod nvarchar(50),
+    @ShippingAddress nvarchar(500),
+    @Notes nvarchar(max),
+    @CreatedBy int,
+    @OrderItems xml -- Truyền danh sách item dưới dạng XML để xử lý trong 1 lần gọi
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Chèn đơn hàng chính
+        DECLARE @SalesOrderId int;
+        INSERT INTO [dbo].[SalesOrders] (OrderNumber, CustomerId, OrderDate, Status, PaymentMethod, PaymentStatus, TotalAmount, ShippingAddress, Notes, CreatedBy)
+        VALUES (@OrderNumber, @CustomerId, @OrderDate, 'NEW', @PaymentMethod, 'PENDING', 0, @ShippingAddress, @Notes, @CreatedBy);
+        
+        SET @SalesOrderId = SCOPE_IDENTITY();
+
+        -- 2. Đọc XML và chèn vào SalesOrderItems
+        INSERT INTO [dbo].[SalesOrderItems] (SalesOrderId, ProductId, Quantity, UnitPrice, Discount)
+        SELECT 
+            @SalesOrderId,
+            T.Item.value('(ProductId)[1]', 'int'),
+            T.Item.value('(Quantity)[1]', 'int'),
+            T.Item.value('(UnitPrice)[1]', 'decimal(18,2)'),
+            T.Item.value('(Discount)[1]', 'decimal(18,2)')
+        FROM @OrderItems.nodes('/Items/Item') AS T(Item);
+
+        -- 3. Cập nhật tồn kho và ghi nhật ký StockMovements
+        DECLARE @Pid int, @Qty int;
+        DECLARE item_cursor CURSOR FOR 
+        SELECT ProductId, Quantity FROM [dbo].[SalesOrderItems] WHERE SalesOrderId = @SalesOrderId;
+
+        OPEN item_cursor;
+        FETCH NEXT FROM item_cursor INTO @Pid, @Qty;
+
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Kiểm tra tồn kho
+            IF (SELECT StockQuantity FROM Products WHERE Id = @Pid) < @Qty
+            BEGIN
+                DECLARE @ErrMsg nvarchar(250) = 'San pham ID ' + CAST(@Pid AS nvarchar) + ' khong du ton kho.';
+                RAISERROR(@ErrMsg, 16, 1);
+            END
+
+            -- Trừ kho
+            UPDATE Products SET StockQuantity = StockQuantity - @Qty WHERE Id = @Pid;
+
+            -- Ghi nhật ký kho
+            INSERT INTO StockMovements (ProductId, MovementType, Quantity, Reference, CreatedBy)
+            VALUES (@Pid, 'OUT', @Qty, @OrderNumber, @CreatedBy);
+
+            FETCH NEXT FROM item_cursor INTO @Pid, @Qty;
+        END
+        CLOSE item_cursor;
+        DEALLOCATE item_cursor;
+
+        -- 4. Tính toán lại tổng tiền đơn hàng
+        UPDATE [dbo].[SalesOrders]
+        SET TotalAmount = (SELECT SUM((UnitPrice - Discount) * Quantity) FROM SalesOrderItems WHERE SalesOrderId = @SalesOrderId)
+        WHERE Id = @SalesOrderId;
+
+        COMMIT TRANSACTION;
+        SELECT @SalesOrderId AS SalesOrderId;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
+GO
+
+-- 8.2. SP Xác nhận nhập hàng (Purchase Order)
+CREATE PROCEDURE [dbo].[sp_ReceivePurchaseOrder]
+    @POId int,
+    @ReceivedDate date,
+    @ReceivedBy int
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Cập nhật trạng thái PO
+        UPDATE PurchaseOrders 
+        SET Status = 'RECEIVED', ReceivedDate = @ReceivedDate, UpdatedAt = SYSDATETIMEOFFSET()
+        WHERE Id = @POId AND Status = 'PENDING';
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            RAISERROR('Don mua hang khong ton tai hoac da duoc xu ly truoc do.', 16, 1);
+        END
+
+        -- 2. Cộng tồn kho và ghi nhật ký StockMovements
+        INSERT INTO StockMovements (ProductId, MovementType, Quantity, Reference, CreatedBy)
+        SELECT 
+            POI.ProductId, 'IN', POI.Quantity, PO.PONumber, @ReceivedBy
+        FROM PurchaseOrderItems POI
+        JOIN PurchaseOrders PO ON POI.PurchaseOrderId = PO.Id
+        WHERE PO.Id = @POId;
+
+        UPDATE P
+        SET P.StockQuantity = P.StockQuantity + POI.Quantity,
+            P.UpdatedAt = SYSDATETIMEOFFSET()
+        FROM Products P
+        JOIN PurchaseOrderItems POI ON P.Id = POI.ProductId
+        WHERE POI.PurchaseOrderId = @POId;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
+GO
+
+-- 8.3. SP Báo cáo doanh thu
+CREATE PROCEDURE [dbo].[sp_GetRevenueReport]
+    @FromDate date,
+    @ToDate date
+AS
+BEGIN
+    SELECT 
+        OrderDate,
+        COUNT(Id) AS TotalOrders,
+        SUM(TotalAmount) AS DailyRevenue
+    FROM SalesOrders
+    WHERE OrderDate BETWEEN @FromDate AND @ToDate 
+      AND Status = 'COMPLETED' 
+      AND IsDeleted = 0
+    GROUP BY OrderDate
+    ORDER BY OrderDate;
+END
+GO
+
+-- 8.4. SP Xóa mềm tổng quát
+CREATE PROCEDURE [dbo].[sp_SoftDelete]
+    @TableName nvarchar(100),
+    @Id int
+AS
+BEGIN
+    DECLARE @Sql nvarchar(max);
+    SET @Sql = 'UPDATE ' + QUOTENAME(@TableName) + 
+               ' SET IsDeleted = 1, UpdatedAt = SYSDATETIMEOFFSET() WHERE Id = @Id';
+    
+    EXEC sp_executesql @Sql, N'@Id int', @Id;
+END
 GO
