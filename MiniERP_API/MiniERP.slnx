@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../MiniERP_WebView/MiniERP_WebView.csproj" Id="71669495-ad07-442b-80f3-f2a22537eca2" />
+  <Project Path="MiniERP_API.csproj" />
+</Solution>

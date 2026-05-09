@@ -1,0 +1,129 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using MiniERP_API.Models.Entities;
+using MiniERP_API.Helpers;
+using MiniERP_API.Repositories.Interfaces;
+
+namespace MiniERP_API.Repositories
+{
+    public class ProductRepository : IProductRepository
+    {
+        private readonly string _connectionString;
+
+        public ProductRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public IEnumerable<Product> GetAll()
+        {
+            var products = new List<Product>();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand(Queries.GetAllProducts, conn);
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        products.Add(MapProduct(reader));
+                    }
+                }
+            }
+            return products;
+        }
+
+        public Product GetById(int id)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand(Queries.GetProductById, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read()) return MapProduct(reader);
+                }
+            }
+            return null;
+        }
+
+        public int Add(Product p)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand(Queries.InsertProduct, conn);
+                AddProductParameters(cmd, p);
+                conn.Open();
+                return (int)cmd.ExecuteScalar();
+            }
+        }
+
+        public void Update(Product p)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand(Queries.UpdateProduct, conn);
+                cmd.Parameters.AddWithValue("@Id", p.Id);
+                AddProductParameters(cmd, p);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void Delete(int id)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand(Queries.DeleteProduct, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void AddProductParameters(SqlCommand cmd, Product p)
+        {
+            cmd.Parameters.AddWithValue("@CategoryId", (object)p.CategoryId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@BrandId", (object)p.BrandId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@SKU", p.SKU);
+            cmd.Parameters.AddWithValue("@Name", p.Name);
+            cmd.Parameters.AddWithValue("@Description", (object)p.Description ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@SeriesName", (object)p.SeriesName ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Scale", (object)p.Scale ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Grade", (object)p.Grade ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Weight", (object)p.Weight ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@CostPrice", p.CostPrice);
+            cmd.Parameters.AddWithValue("@RetailPrice", p.RetailPrice);
+            cmd.Parameters.AddWithValue("@StockQuantity", p.StockQuantity);
+            cmd.Parameters.AddWithValue("@ImageUrl", (object)p.ImageUrl ?? DBNull.Value);
+        }
+
+        private Product MapProduct(SqlDataReader reader)
+        {
+            return new Product
+            {
+                Id = (int)reader["Id"],
+                CategoryId = reader["CategoryId"] as int?,
+                BrandId = reader["BrandId"] as int?,
+                SKU = reader["SKU"].ToString(),
+                Name = reader["Name"].ToString(),
+                Description = reader["Description"].ToString(),
+                SeriesName = reader["SeriesName"].ToString(),
+                Scale = reader["Scale"].ToString(),
+                Grade = reader["Grade"].ToString(),
+                Weight = reader["Weight"] as decimal?,
+                CostPrice = (decimal)reader["CostPrice"],
+                RetailPrice = (decimal)reader["RetailPrice"],
+                StockQuantity = (int)reader["StockQuantity"],
+                ImageUrl = reader["ImageUrl"].ToString(),
+                IsActive = (bool)reader["IsActive"],
+                CreatedAt = (DateTimeOffset)reader["CreatedAt"],
+                UpdatedAt = reader["UpdatedAt"] == DBNull.Value ? null : (DateTimeOffset?)reader["UpdatedAt"],
+                IsDeleted = (bool)reader["IsDeleted"]
+            };
+        }
+    }
+}
