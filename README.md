@@ -1,17 +1,45 @@
-# Hobby Store Mini ERP API
+# Hobby Store Mini ERP
 
 ## 📌 Tổng quan dự án (Overview)
 **Hobby Store Mini ERP** là một hệ thống quản lý tài nguyên doanh nghiệp (ERP) phiên bản tinh gọn, được thiết kế dành riêng cho các mô hình kinh doanh đồ chơi, figure, gundam và các sản phẩm sưu tầm (hobby). 
 
-Hệ thống cung cấp các giải pháp quản lý tập trung từ khâu nhập hàng, theo dõi tồn kho, quản lý danh mục sản phẩm đặc thù đến xử lý đơn hàng bán lẻ. Dự án được xây dựng dưới dạng **Web API** sử dụng nền tảng .NET Core, hướng tới sự linh hoạt, dễ dàng tích hợp với các nền tảng Frontend hoặc Mobile App.
+Hệ thống bao gồm:
+- **MiniERP_API:** Web API backend xử lý logic nghiệp vụ
+- **MiniERP_WebView:** Frontend Razor Pages cho giao diện người dùng
+
+Hệ thống cung cấp các giải pháp quản lý tập trung từ khâu nhập hàng, theo dõi tồn kho, quản lý danh mục sản phẩm đặc thù đến xử lý đơn hàng bán lẻ. Dự án được xây dựng dưới nền tảng **.NET 10**, hướng tới sự linh hoạt, dễ dàng bảo trì và mở rộng.
 
 ---
 
 ## 🎯 Mục tiêu dự án (Project Goals)
-1. **Quản lý chuyên sâu sản phẩm Hobby:** Hỗ trợ các thuộc tính đặc thù như Scale (tỉ lệ), Grade (phân loại mô hình), SKU, Series...
+1. **Quản lý chuyên sâu sản phẩm Hobby:** Hỗ trợ các thuộc tính đặc thù như SKU, thương hiệu, phân loại...
 2. **Tối ưu quy trình vận hành:** Số hóa quy trình từ lúc đặt hàng nhà cung cấp (PO) đến khi xuất kho bán hàng (SO).
-3. **Kiểm soát tồn kho thời gian thực:** Theo dõi biến động kho (Stock Movements) để tránh thất thoát và tối ưu hóa vòng quay hàng tồn.
+3. **Kiểm soát tồn kho thời gian thực:** Theo dõi biến động kho để tránh thất thoát và tối ưu hóa vòng quay hàng tồn.
 4. **Kiến trúc bền vững:** Xây dựng codebase theo Layered Architecture (Repository/Service Pattern) để dễ dàng bảo trì và mở rộng.
+
+---
+
+## 🛠 Cấu trúc dự án (Project Structure)
+
+```
+HobbyStore-MiniERP/
+├── MiniERP_API/              # Backend API
+│   ├── Models/
+│   │   ├── Entities/         # Database entities
+│   │   └── DTOs/             # Data Transfer Objects
+│   ├── Services/             # Business logic layer
+│   ├── Controllers/          # API endpoints
+│   ├── Data/                 # Database context
+│   └── MiniERP_API.csproj
+│
+├── MiniERP_WebView/          # Frontend Razor Pages
+│   ├── Pages/
+│   ├── wwwroot/              # Static files
+│   └── MiniERP_WebView.csproj
+│
+├── .gitignore
+└── README.md
+```
 
 ---
 
@@ -39,15 +67,80 @@ Hệ thống được chia thành 4 phân hệ chính:
 ---
 
 ## 🚀 Công nghệ sử dụng (Tech Stack)
-- **Backend:** .NET 8.0 (ASP.NET Core Web API)
+
+### Backend (MiniERP_API)
+- **Runtime:** .NET 10.0
+- **Framework:** ASP.NET Core Web API
 - **Database:** SQL Server
-- **Data Access:** ADO.NET / Dapper (Tối ưu hiệu năng và kiểm soát SQL)
-- **Documentation:** NSwag (Swagger UI)
-- **Pattern:** Repository & Service Pattern
+- **Data Access:** ADO.NET (Microsoft.Data.SqlClient)
+- **Mapping:** AutoMapper (for DTO mapping)
+- **API Documentation:** NSwag (Swagger UI)
+- **Architecture Pattern:** Repository & Service Pattern
+
+### Frontend (MiniERP_WebView)
+- **Framework:** ASP.NET Core Razor Pages
+- **Runtime:** .NET 10.0
+- **Styling:** Bootstrap 5 (or CSS framework as per project)
 
 ---
 
-## 📋 Yêu cầu hệ thống
-- .NET SDK 8.0+
-- SQL Server 2019+
-- Visual Studio 2022 hoặc VS Code
+## 📋 Yêu cầu hệ thống (System Requirements)
+- **.NET SDK:** 10.0+
+- **Visual Studio:** 2022+ Community/Professional
+- **Database:** SQL Server 2022+ (hoặc SQL Server 2019 Express)
+- **RAM:** 4GB tối thiểu
+- **Disk Space:** 2GB
+
+---
+
+## 🔧 Cài đặt và chạy (Installation & Setup)
+
+### 1. Clone repository
+```bash
+git clone https://github.com/Datgh37/dotnet-final-hobby-mini-erp.git
+cd HobbyStore-MiniERP
+```
+
+### 2. Restore dependencies
+```bash
+dotnet restore
+```
+
+### 3. Cấu hình Database Connection
+- Cập nhật `appsettings.json` hoặc `appsettings.Development.json` với connection string SQL Server của bạn
+
+### 4. Chạy Backend (MiniERP_API)
+```bash
+cd MiniERP_API
+dotnet run
+# API sẽ chạy tại: https://localhost:5001
+# Swagger UI: https://localhost:5001/swagger
+```
+
+### 5. Chạy Frontend (MiniERP_WebView)
+```bash
+cd MiniERP_WebView
+dotnet run
+# WebView sẽ chạy tại: https://localhost:5002
+```
+
+---
+
+## 📖 API Documentation
+API documentation được tạo tự động bằng **NSwag (Swagger)**:
+- Truy cập tại: `https://localhost:5001/swagger` khi chạy backend
+- Hỗ trợ testing trực tiếp các endpoint
+
+---
+
+## 📝 License
+This project is for educational purposes.
+
+---
+
+## 👥 Contributors
+- **Author:** Datgh37
+
+---
+
+**Last Updated:** $(date)
