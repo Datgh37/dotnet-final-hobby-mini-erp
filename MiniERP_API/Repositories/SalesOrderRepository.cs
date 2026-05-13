@@ -85,7 +85,7 @@ namespace MiniERP_API.Repositories
             cmd.Parameters.Add(new SqlParameter("@OrderItems", SqlDbType.Xml) { Value = xml.ToString() });
 
             conn.Open();
-            return (int)cmd.ExecuteScalar();
+                return (int)cmd.ExecuteScalar();
         }
 
         public void UpdateStatus(int id, string status)
