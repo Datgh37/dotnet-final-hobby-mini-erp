@@ -103,15 +103,13 @@ GO
 /****** 4. Khách hàng ******/
 CREATE TABLE [dbo].[Customers](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[UserId] [int] NULL,
 	[Name] [nvarchar](200) NOT NULL,
 	[Email] [nvarchar](256) NULL,
 	[Phone] [nvarchar](50) NULL,
 	[Address] [nvarchar](500) NULL,
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,
-	[IsDeleted] [bit] NOT NULL DEFAULT (0),
-	CONSTRAINT [FK_Cust_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([Id])
+	[IsDeleted] [bit] NOT NULL DEFAULT (0)
 )
 GO
 

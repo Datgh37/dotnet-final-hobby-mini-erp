@@ -38,7 +38,6 @@ namespace MiniERP_API.Repositories
         {
             using var conn = new SqlConnection(_cs);
             var cmd = new SqlCommand(Queries.InsertCustomer, conn);
-            cmd.Parameters.AddWithValue("@UserId", (object)c.UserId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Name", c.Name);
             cmd.Parameters.AddWithValue("@Email", (object)c.Email ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Phone", (object)c.Phone ?? DBNull.Value);
@@ -90,7 +89,7 @@ namespace MiniERP_API.Repositories
 
         private Customer Map(SqlDataReader r) => new Customer
         {
-            Id = (int)r["Id"], UserId = r["UserId"] as int?, Name = r["Name"].ToString(),
+            Id = (int)r["Id"], Name = r["Name"].ToString(),
             Email = r["Email"]?.ToString(), Phone = r["Phone"]?.ToString(),
             Address = r["Address"]?.ToString(),
             CreatedAt = (DateTimeOffset)r["CreatedAt"], UpdatedAt = r["UpdatedAt"] as DateTimeOffset?, IsDeleted = (bool)r["IsDeleted"]

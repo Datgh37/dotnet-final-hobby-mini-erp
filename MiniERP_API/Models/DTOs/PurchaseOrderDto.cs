@@ -5,23 +5,48 @@ namespace MiniERP_API.Models.DTOs
 {
     public class PurchaseOrderDto
     {
+        /// <example>1</example>
         public int Id { get; set; }
+        
+        /// <example>PO-87654321</example>
         public string PONumber { get; set; }
+        
+        /// <example>1</example>
         public int? SupplierId { get; set; }
+        
+        /// <example>2026-05-14T10:00:00Z</example>
         public DateTime? OrderDate { get; set; }
+        
+        /// <example>2026-05-20T10:00:00Z</example>
         public DateTime? ExpectedDate { get; set; }
+        
+        /// <example>2026-05-14T10:00:00Z</example>
         public DateTime? ReceivedDate { get; set; }
+        
+        /// <example>RECEIVED</example>
         public string Status { get; set; }
+        
+        /// <example>4250000</example>
         public decimal TotalAmount { get; set; }
+        
+        /// <example>Nhập hàng bổ sung kho tháng 5</example>
         public string Notes { get; set; }
+        
         public List<PurchaseOrderItemDto> Items { get; set; }
     }
 
     public class PurchaseOrderItemDto
     {
+        /// <example>1</example>
         public int Id { get; set; }
+        
+        /// <example>1</example>
         public int ProductId { get; set; }
+        
+        /// <example>50</example>
         public int Quantity { get; set; }
+        
+        /// <example>85000</example>
         public decimal UnitPrice { get; set; }
     }
 

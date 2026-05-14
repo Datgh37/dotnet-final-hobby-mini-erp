@@ -2,11 +2,22 @@ namespace MiniERP_API.Models.DTOs
 {
     public class SupplierDto
     {
+        /// <example>1</example>
         public int Id { get; set; }
+        
+        /// <example>Global Logistics Ltd</example>
         public string Name { get; set; }
+        
+        /// <example>John Doe</example>
         public string ContactPerson { get; set; }
+        
+        /// <example>0283344556</example>
         public string Phone { get; set; }
+        
+        /// <example>info@globallogistics.com</example>
         public string Email { get; set; }
+        
+        /// <example>Tokyo, Japan</example>
         public string Address { get; set; }
     }
 

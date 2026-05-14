@@ -4,11 +4,22 @@ namespace MiniERP_API.Models.DTOs
 {
     public class StockMovementDto
     {
+        /// <example>101</example>
         public int Id { get; set; }
+        
+        /// <example>1</example>
         public int ProductId { get; set; }
+        
+        /// <example>IN</example>
         public string MovementType { get; set; }
+        
+        /// <example>50</example>
         public int Quantity { get; set; }
+        
+        /// <example>PO-20260514</example>
         public string Reference { get; set; }
+        
+        /// <example>2026-05-14T10:00:00Z</example>
         public DateTimeOffset CreatedAt { get; set; }
     }
 

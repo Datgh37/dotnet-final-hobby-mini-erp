@@ -82,8 +82,8 @@ namespace MiniERP_API.Helpers
         public const string GetAllCustomers = "SELECT * FROM Customers WHERE IsDeleted = 0";
         public const string GetCustomerById = "SELECT * FROM Customers WHERE Id = @Id AND IsDeleted = 0";
         public const string InsertCustomer = @"
-            INSERT INTO Customers (UserId, Name, Email, Phone, Address, CreatedAt, IsDeleted) 
-            VALUES (@UserId, @Name, @Email, @Phone, @Address, SYSDATETIMEOFFSET(), 0); 
+            INSERT INTO Customers (Name, Email, Phone, Address, CreatedAt, IsDeleted) 
+            VALUES (@Name, @Email, @Phone, @Address, SYSDATETIMEOFFSET(), 0); 
             SELECT CAST(SCOPE_IDENTITY() as int);";
         public const string UpdateCustomer = "UPDATE Customers SET Name = @Name, Email = @Email, Phone = @Phone, Address = @Address, UpdatedAt = SYSDATETIMEOFFSET() WHERE Id = @Id";
         public const string DeleteCustomer = "UPDATE Customers SET IsDeleted = 1 WHERE Id = @Id";

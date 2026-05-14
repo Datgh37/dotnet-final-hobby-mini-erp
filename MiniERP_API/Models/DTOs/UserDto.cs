@@ -4,10 +4,19 @@ namespace MiniERP_API.Models.DTOs
 {
     public class UserDto
     {
+        /// <example>1</example>
         public int Id { get; set; }
+        
+        /// <example>admin</example>
         public string UserName { get; set; }
+        
+        /// <example>admin@minierp.com</example>
         public string Email { get; set; }
+        
+        /// <example>System Administrator</example>
         public string FullName { get; set; }
+        
+        /// <example>Admin</example>
         public string Role { get; set; }
     }
 
