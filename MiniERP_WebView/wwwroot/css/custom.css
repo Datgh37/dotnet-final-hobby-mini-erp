@@ -173,3 +173,42 @@ body.not-admin th:nth-last-child(1),
 body.not-admin td:nth-last-child(1) {
     display: none !important;
 }
+/* GLASSMORPHISM TOAST */
+.glass-toast {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    color: #1e1e2d;
+    padding: 1rem 1.5rem;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: translate(-50%, -20px);
+    z-index: 10000;
+}
+
+[data-coreui-theme="dark"] .glass-toast {
+    background: rgba(30, 30, 45, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 20px);
+}
+
+.glass-toast.toast-success { border-left: 5px solid #2eb85c; }
+.glass-toast.toast-danger { border-left: 5px solid #e55353; }
+.glass-toast.toast-info { border-left: 5px solid #3399ff; }
+
+.glass-toast i {
+    font-size: 1.5rem;
+}

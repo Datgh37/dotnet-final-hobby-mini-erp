@@ -46,7 +46,7 @@
     let currentItems = [];
 
     if (!orderId) {
-        alert('Missing order id');
+        showAlert('Thiếu ID đơn hàng', 'danger');
         window.location.href = '/PurchaseOrders/Index';
     }
 
@@ -55,7 +55,7 @@
             const response = await fetch(`${window.API_BASE}/purchase-orders/${orderId}`);
 
             if (!response.ok) {
-                alert("Load order failed");
+                showAlert("Không thể tải đơn hàng", "danger");
                 window.location.href = '/PurchaseOrders/Index';
                 return;
             }
@@ -97,15 +97,15 @@
             });
 
             if (response.ok) {
-                alert('Purchase order updated successfully!');
+                showAlert('Đã cập nhật đơn mua hàng thành công!');
                 window.location.href = '/PurchaseOrders/Index';
             } else {
                 const error = await response.text();
-                alert('Failed to update purchase order: ' + (error || response.statusText));
+                showAlert('Cập nhật thất bại: ' + (error || response.statusText), 'danger');
             }
         } catch (error) {
             console.log(error);
-            alert('Error: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'danger');
         }
     });
 

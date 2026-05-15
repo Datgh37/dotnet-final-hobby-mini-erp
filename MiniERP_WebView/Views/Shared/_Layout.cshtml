@@ -704,6 +704,9 @@
                             <a class="dropdown-item py-2" href="/Auth/Login" id="dropdown-login">
                                 <i class="cil-user me-2 text-primary"></i> Đăng nhập
                             </a>
+                            <a class="dropdown-item py-2" href="javascript:void(0)" data-coreui-toggle="modal" data-coreui-target="#changePasswordModal">
+                                <i class="cil-lock-locked me-2 text-info"></i> Đổi mật khẩu
+                            </a>
                             <a class="dropdown-item py-2 text-danger" href="javascript:void(0)" onclick="logout()" id="dropdown-logout">
                                 <i class="cil-account-logout me-2"></i> Đăng xuất
                             </a>
@@ -753,5 +756,85 @@
     <script src="~/vendors/@@coreui/utils/js/index.js"></script>
     <script src="~/js/site.js"></script>
     <script src="~/js/main.js"></script>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="changePasswordForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đổi mật khẩu</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="oldPassword" required>
+                            <button class="btn btn-outline-secondary border-secondary-subtle" type="button" onclick="togglePassword('oldPassword', this)">
+                                <i class="cil-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="newPassword" required minlength="6">
+                            <button class="btn btn-outline-secondary border-secondary-subtle" type="button" onclick="togglePassword('newPassword', this)">
+                                <i class="cil-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Tối thiểu 6 ký tự.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Xác nhận mật khẩu mới</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                            <button class="btn btn-outline-secondary border-secondary-subtle" type="button" onclick="togglePassword('confirmPassword', this)">
+                                <i class="cil-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('cil-eye');
+                icon.classList.add('cil-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('cil-eye-slash');
+                icon.classList.add('cil-eye');
+            }
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirmPass) {
+                showAlert("Xác nhận mật khẩu không khớp!", "danger");
+                return;
+            }
+
+            const success = await window.changePassword(oldPass, newPass);
+            if (success) {
+                coreui.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                document.getElementById('changePasswordForm').reset();
+            }
+        });
+    </script>
 </body>
 </html>

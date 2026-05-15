@@ -56,7 +56,7 @@
             document.getElementById("notes").value = order.notes;
         } catch (error) {
             console.log(error);
-            alert("Load order failed");
+            showAlert("Không thể tải đơn hàng", "danger");
         }
     }
 
@@ -82,14 +82,14 @@
             });
 
             if (response.ok) {
-                alert('Sales order updated successfully!');
+                showAlert('Cập nhật đơn hàng thành công!');
                 window.location.href = '/SalesOrders/Index';
             } else {
-                alert('Failed to update sales order');
+                showAlert('Cập nhật đơn hàng thất bại', 'danger');
             }
         } catch (error) {
             console.log(error);
-            alert('Error: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'danger');
         }
     });
 

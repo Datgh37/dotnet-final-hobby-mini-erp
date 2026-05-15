@@ -64,14 +64,14 @@
             });
 
             if (response.ok) {
-                alert('Stock adjusted successfully!');
+                showAlert('Điều chỉnh kho thành công!');
                 window.location.href = '/Inventory/Index';
             } else {
-                alert('Failed to adjust stock');
+                showAlert('Điều chỉnh kho thất bại', 'danger');
             }
         } catch (error) {
             console.log(error);
-            alert('Error: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'danger');
         }
     });
 </script>

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MiniERP_API.Models.DTOs
 {
     public class CategoryDto
@@ -8,15 +10,21 @@ namespace MiniERP_API.Models.DTOs
         /// <example>Smartphone</example>
         public string Name { get; set; }
         
+        /// <example>Devices for mobile communication</example>
+        public string Description { get; set; }
+        
         /// <example>null</example>
         public int? ParentCategoryId { get; set; }
     }
-
+    
     public class CategoryCreateUpdateDto
     {
         /// <example>Household</example>
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Tên danh mục là bắt buộc.")]
+        [Required(ErrorMessage = "Tên danh mục là bắt buộc.")]
         public string Name { get; set; }
+        
+        /// <example>Items for home use</example>
+        public string Description { get; set; }
 
         /// <example>null</example>
         public int? ParentCategoryId { get; set; }

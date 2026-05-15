@@ -39,6 +39,7 @@ namespace MiniERP_API.Repositories
             using var conn = new SqlConnection(_cs);
             var cmd = new SqlCommand(Queries.InsertCategory, conn);
             cmd.Parameters.AddWithValue("@Name", c.Name);
+            cmd.Parameters.AddWithValue("@Desc", (object)c.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@ParentId", (object)c.ParentCategoryId ?? DBNull.Value);
             conn.Open();
             return (int)cmd.ExecuteScalar();
@@ -50,6 +51,7 @@ namespace MiniERP_API.Repositories
             var cmd = new SqlCommand(Queries.UpdateCategory, conn);
             cmd.Parameters.AddWithValue("@Id", c.Id);
             cmd.Parameters.AddWithValue("@Name", c.Name);
+            cmd.Parameters.AddWithValue("@Desc", (object)c.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@ParentId", (object)c.ParentCategoryId ?? DBNull.Value);
             conn.Open();
             cmd.ExecuteNonQuery();
@@ -77,7 +79,10 @@ namespace MiniERP_API.Repositories
 
         private ProductCategory Map(SqlDataReader r) => new ProductCategory
         {
-            Id = (int)r["Id"], Name = r["Name"].ToString(), ParentCategoryId = r["ParentCategoryId"] as int?,
+            Id = (int)r["Id"], 
+            Name = r["Name"].ToString(), 
+            Description = r["Description"]?.ToString(),
+            ParentCategoryId = r["ParentCategoryId"] as int?,
             CreatedAt = (DateTimeOffset)r["CreatedAt"], UpdatedAt = r["UpdatedAt"] as DateTimeOffset?, IsDeleted = (bool)r["IsDeleted"]
         };
     }

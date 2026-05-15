@@ -142,8 +142,8 @@
             await handleApiError(response);
             document.getElementById('adjustForm').reset();
             loadMovements();
-            alert("Điều chỉnh kho thành công!");
-        } catch (e) { alert(e.message); }
+            showAlert("Điều chỉnh kho thành công!");
+        } catch (e) { showAlert(e.message, 'danger'); }
     }
 
     document.getElementById('adjustForm').addEventListener('submit', handleAdjust);

@@ -117,7 +117,13 @@ window.handleApiError = async function(response) {
     try {
         const err = await response.json();
         console.error('[API Error Data]', err);
-        message = err.message || err.title || JSON.stringify(err);
+        
+        // Handle ASP.NET Core Validation Errors (ModelState)
+        if (err.errors) {
+            message = Object.values(err.errors).flat().join('<br>');
+        } else {
+            message = err.message || err.title || JSON.stringify(err);
+        }
     } catch {
         const text = await response.text();
         if (text) message = text;
@@ -126,19 +132,51 @@ window.handleApiError = async function(response) {
     throw new Error(message);
 };
 
+window.changePassword = async function(oldPassword, newPassword) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) return;
+
+    try {
+        const response = await fetch(`${window.API_BASE}/Users/${user.id}/password`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ oldPassword, newPassword })
+        });
+
+        await handleApiError(response);
+        showAlert("Đổi mật khẩu thành công!");
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+};
+
 window.showAlert = function(message, type = 'success') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-    alertDiv.style.zIndex = '9999';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
+    const existing = document.querySelector('.glass-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `glass-toast toast-${type} position-fixed top-0 start-50 translate-middle-x`;
+    
+    let icon = 'cil-check-circle';
+    if (type === 'danger') icon = 'cil-x-circle';
+    if (type === 'info') icon = 'cil-info';
+
+    toast.innerHTML = `
+        <i class="${icon} text-${type}"></i>
+        <div class="flex-grow-1">${message}</div>
     `;
-    document.body.appendChild(alertDiv);
+    
+    document.body.appendChild(toast);
+    
+    // Force reflow for animation
+    setTimeout(() => toast.classList.add('show'), 10);
+
     setTimeout(() => {
-        const bsAlert = new coreui.Alert(alertDiv);
-        bsAlert.close();
-    }, 3000);
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
 };
 
 // --- AUTH UI ---
@@ -157,6 +195,21 @@ window.checkAuth = function() {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const userNameEl = document.getElementById('header-user-name');
         if (userNameEl) userNameEl.innerText = user.fullName || user.userName;
+
+        // Hide Users menu for non-Admin
+        const usersMenu = document.getElementById('users-menu-item');
+        if (usersMenu) {
+            if (user.role === 'Admin') {
+                usersMenu.classList.remove('d-none');
+            } else {
+                usersMenu.classList.add('d-none');
+            }
+        }
+
+        // Redirect if on forbidden page (Staff trying to access /Users)
+        if (user.role !== 'Admin' && window.location.pathname.toLowerCase().includes('/users')) {
+            window.location.href = '/Dashboard';
+        }
     } else {
         if (loginEl) loginEl.classList.remove('d-none');
         if (logoutEl) logoutEl.classList.add('d-none');

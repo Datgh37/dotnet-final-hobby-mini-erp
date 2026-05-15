@@ -31,18 +31,26 @@ INSERT INTO [dbo].[Brands] ([Name], [Description]) VALUES
 GO
 
 -- 5. Product Categories (10 Categories)
-INSERT INTO [dbo].[ProductCategories] ([Name]) VALUES 
-(N'Điện thoại'), (N'Laptop'), (N'Máy tính bảng'), (N'Tai nghe'), (N'Giày thể thao'), 
-(N'Áo thun'), (N'Gia dụng'), (N'Nước giải khát'), (N'Bánh kẹo'), (N'Phụ kiện');
+INSERT INTO [dbo].[ProductCategories] ([Name], [Description]) VALUES 
+(N'Điện thoại', N'Các dòng smartphone mới nhất'), 
+(N'Laptop', N'Máy tính xách tay văn phòng và gaming'), 
+(N'Máy tính bảng', N'Thiết bị giải trí và làm việc di động'), 
+(N'Tai nghe', N'Phụ kiện âm thanh chính hãng'), 
+(N'Giày thể thao', N'Thời trang năng động'), 
+(N'Áo thun', N'Trang phục cơ bản hằng ngày'), 
+(N'Gia dụng', N'Thiết bị điện gia đình thông minh'), 
+(N'Nước giải khát', N'Đồ uống đóng chai các loại'), 
+(N'Bánh kẹo', N'Thực phẩm ăn nhẹ'), 
+(N'Phụ kiện', N'Linh kiện và đồ chơi công nghệ');
 GO
 
 -- 6. Suppliers (5 Suppliers)
 INSERT INTO [dbo].[Suppliers] ([Name], [ContactPerson], [Phone], [Email], [Address]) VALUES 
-(N'Công ty Thế Giới Số', N'Nguyễn Văn Trỗi', '0912345678', 'contact@digiworld.vn', N'Quận 1, TP.HCM'),
-(N'Kho Sỉ Thời Trang HN', N'Lê Thị Mai', '0988776655', 'mai@thoitranghn.com', N'Cầu Giấy, Hà Nội'),
-(N'Nhà cung cấp TechHub', N'Trần Đại Nghĩa', '0243334455', 'sales@techhub.vn', N'Quận Hải Châu, Đà Nẵng'),
-(N'Đại lý Phụ kiện Pro', N'Phạm Nhật Vượng', '0909090909', 'pro@phukien.com', N'Bình Thạnh, TP.HCM'),
-(N'Tổng kho FMCG Miền Nam', N'Bùi Văn Phúc', '0123456789', 'phuc@fmcg.vn', N'Cần Thơ');
+(N'Công ty Thế Giới Số', N'Nguyễn Minh Tuấn', '0912345678', 'tuan.nm@digiworld.vn', N'Quận 1, TP.HCM'),
+(N'Kho Sỉ Thời Trang HN', N'Lê Thu Trang', '0988776655', 'trang.lt@thoitranghn.com', N'Cầu Giấy, Hà Nội'),
+(N'Nhà cung cấp TechHub', N'Trần Hoàng Nam', '0243334455', 'nam.th@techhub.vn', N'Quận Hải Châu, Đà Nẵng'),
+(N'Đại lý Phụ kiện Pro', N'Phạm Việt Hùng', '0909090909', 'hung.pv@phukien.com', N'Bình Thạnh, TP.HCM'),
+(N'Tổng kho FMCG Miền Nam', N'Bùi Thanh Sơn', '0123456789', 'son.bt@fmcg.vn', N'Cần Thơ');
 GO
 
 -- 7. Customers (10 Customers)

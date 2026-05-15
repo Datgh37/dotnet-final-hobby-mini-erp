@@ -32,6 +32,9 @@ namespace MiniERP_API.Models.DTOs
         /// <example>Test Manager Account</example>
         [Required(ErrorMessage = "Họ và tên là bắt buộc.")]
         public string FullName { get; set; }
+
+        /// <example>Admin</example>
+        public string Role { get; set; }
     }
 
     public class AuthResponse

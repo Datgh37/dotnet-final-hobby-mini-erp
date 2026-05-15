@@ -56,6 +56,7 @@ GO
 CREATE TABLE [dbo].[ProductCategories](
 	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[Name] [nvarchar](200) NOT NULL,
+	[Description] [nvarchar](500) NULL,
 	[ParentCategoryId] [int] NULL,
 	[CreatedAt] [datetimeoffset](7) NOT NULL DEFAULT (sysutcdatetime()),
 	[UpdatedAt] [datetimeoffset](7) NULL,

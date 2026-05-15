@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MiniERP_API.Models.DTOs
 {
     public class ProductDto
@@ -45,11 +47,11 @@ namespace MiniERP_API.Models.DTOs
         public int? BrandId { get; set; }
         
         /// <example>AP-IP15PM</example>
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Mã SKU là bắt buộc.")]
+        [Required(ErrorMessage = "Mã SKU là bắt buộc.")]
         public string SKU { get; set; }
         
         /// <example>iPhone 15 Pro Max 256GB</example>
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Tên sản phẩm là bắt buộc.")]
+        [Required(ErrorMessage = "Tên sản phẩm là bắt buộc.")]
         public string Name { get; set; }
         
         /// <example>Apple flagship smartphone with Titanium frame.</example>
@@ -59,11 +61,11 @@ namespace MiniERP_API.Models.DTOs
         public string Unit { get; set; }
         
         /// <example>1100.00</example>
-        [System.ComponentModel.DataAnnotations.Range(0, double.MaxValue, ErrorMessage = "Giá vốn không được âm.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Giá vốn không được âm.")]
         public decimal CostPrice { get; set; }
         
         /// <example>1400.00</example>
-        [System.ComponentModel.DataAnnotations.Range(0, double.MaxValue, ErrorMessage = "Giá bán không được âm.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Giá bán không được âm.")]
         public decimal RetailPrice { get; set; }
         
         /// <example>15</example>

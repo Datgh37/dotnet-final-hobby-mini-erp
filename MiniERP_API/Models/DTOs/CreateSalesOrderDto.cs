@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MiniERP_API.Models.DTOs
 {
     public class CreateSalesOrderDto
     {
         /// <example>1</example>
+        [Required(ErrorMessage = "Khách hàng là bắt buộc.")]
         public int? CustomerId { get; set; }
         
         /// <example>CASH</example>
@@ -16,6 +18,7 @@ namespace MiniERP_API.Models.DTOs
         /// <example>Giao hàng giờ hành chính</example>
         public string Notes { get; set; }
         
+        [Required(ErrorMessage = "Danh sách sản phẩm không được để trống.")]
         public List<CreateSalesOrderItemDto> Items { get; set; }
     }
 }

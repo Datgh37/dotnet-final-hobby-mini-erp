@@ -50,14 +50,14 @@
             });
 
             if (response.ok) {
-                alert('Sales order created successfully!');
+                showAlert('Đã tạo đơn hàng thành công!');
                 window.location.href = '/SalesOrders/Index';
             } else {
-                alert('Failed to create sales order');
+                showAlert('Tạo đơn hàng thất bại', 'danger');
             }
         } catch (error) {
             console.log(error);
-            alert('Error: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'danger');
         }
     });
 </script>

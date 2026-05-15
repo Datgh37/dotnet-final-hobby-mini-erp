@@ -38,9 +38,27 @@ namespace MiniERP_API.Services
             var user = _repo.GetById(id);
             if (user != null)
             {
+                // Kiểm tra nếu đổi Username thì không được trùng với người khác
+                if (user.UserName != dto.UserName)
+                {
+                    var existing = _repo.GetByUserName(dto.UserName);
+                    if (existing != null) throw new System.Exception($"Tên đăng nhập '{dto.UserName}' đã tồn tại.");
+                    user.UserName = dto.UserName;
+                }
+
                 user.Email = dto.Email;
                 user.FullName = dto.FullName;
                 _repo.Update(user);
+
+                // Cập nhật Role nếu có cung cấp
+                if (!string.IsNullOrWhiteSpace(dto.Role))
+                {
+                    int roleId = _repo.GetRoleIdByName(dto.Role);
+                    if (roleId > 0)
+                    {
+                        _repo.AssignRole(id, roleId);
+                    }
+                }
             }
         }
 
@@ -61,8 +79,9 @@ namespace MiniERP_API.Services
 
             int userId = _repo.Add(user);
             
-            // Gán role mặc định là Staff
-            int roleId = _repo.GetRoleIdByName("Staff");
+            // Gán role: Sử dụng role từ request nếu có, ngược lại mặc định là Staff
+            string roleName = !string.IsNullOrWhiteSpace(dto.Role) ? dto.Role : "Staff";
+            int roleId = _repo.GetRoleIdByName(roleName);
             
             if (roleId > 0)
             {

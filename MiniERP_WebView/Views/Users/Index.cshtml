@@ -90,12 +90,12 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Họ và tên</label>
-                    <input type="text" class="form-control" id="fullName">
+                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="fullName" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Vai trò</label>
@@ -112,7 +112,15 @@
 
 <script>
     async function init() {
-        await populateSelect('roleId', 'Roles', '-- Chọn vai trò --');
+        // Load roles and manually set values to role names for simplicity in DTO
+        const roles = await populateSelect('roleId', 'Roles', '-- Chọn vai trò --');
+        if (roles) {
+            const select = document.getElementById('roleId');
+            Array.from(select.options).forEach(opt => {
+                const role = roles.find(r => r.id == opt.value);
+                if (role) opt.value = role.name;
+            });
+        }
         loadUsers();
     }
 
@@ -171,10 +179,10 @@
 
             document.getElementById('editUserId').value = u.id;
             document.getElementById('userName').value = u.userName;
-            document.getElementById('userName').disabled = true;
+            document.getElementById('userName').disabled = false;
             document.getElementById('fullName').value = u.fullName || '';
             document.getElementById('email').value = u.email || '';
-            document.getElementById('roleId').value = u.roleId || '';
+            document.getElementById('roleId').value = u.role || '';
             
             document.getElementById('passwordArea').style.display = 'none';
             document.getElementById('password').required = false;
@@ -224,9 +232,10 @@
         let url = `${API_BASE}/Users`;
         let method = 'POST';
         let data = {
+            userName: document.getElementById('userName').value,
             fullName: document.getElementById('fullName').value,
             email: document.getElementById('email').value,
-            roleId: parseInt(document.getElementById('roleId').value) || null
+            role: document.getElementById('roleId').value
         };
 
         if (id) {

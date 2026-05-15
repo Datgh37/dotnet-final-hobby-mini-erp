@@ -36,8 +36,8 @@ namespace MiniERP_API.Helpers
         public const string GetAllCategories = "SELECT * FROM ProductCategories WHERE IsDeleted = 0";
         public const string GetCategoryById = "SELECT * FROM ProductCategories WHERE Id = @Id AND IsDeleted = 0";
         public const string GetCategoryByName = "SELECT * FROM ProductCategories WHERE Name = @Name AND IsDeleted = 0";
-        public const string InsertCategory = "INSERT INTO ProductCategories (Name, ParentCategoryId) VALUES (@Name, @ParentId); SELECT CAST(SCOPE_IDENTITY() as int);";
-        public const string UpdateCategory = "UPDATE ProductCategories SET Name = @Name, ParentCategoryId = @ParentId, UpdatedAt = SYSDATETIMEOFFSET() WHERE Id = @Id";
+        public const string InsertCategory = "INSERT INTO ProductCategories (Name, Description, ParentCategoryId) VALUES (@Name, @Desc, @ParentId); SELECT CAST(SCOPE_IDENTITY() as int);";
+        public const string UpdateCategory = "UPDATE ProductCategories SET Name = @Name, Description = @Desc, ParentCategoryId = @ParentId, UpdatedAt = SYSDATETIMEOFFSET() WHERE Id = @Id";
         public const string DeleteCategory = "UPDATE ProductCategories SET IsDeleted = 1 WHERE Id = @Id";
         #endregion
 

@@ -60,15 +60,15 @@
             });
 
             if (response.ok) {
-                alert('Purchase order created successfully!');
+                showAlert('Đã tạo đơn mua hàng thành công!');
                 window.location.href = '/PurchaseOrders/Index';
             } else {
                 const error = await response.text();
-                alert('Failed to create purchase order: ' + error);
+                showAlert('Tạo đơn mua hàng thất bại: ' + error, 'danger');
             }
         } catch (error) {
             console.log(error);
-            alert('Error: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'danger');
         }
     });
 </script>

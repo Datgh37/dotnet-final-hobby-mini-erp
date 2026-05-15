@@ -22,6 +22,10 @@ namespace MiniERP_API.Models.DTOs
 
     public class UserUpdateDto
     {
+        /// <example>admin</example>
+        [Required(ErrorMessage = "Tên đăng nhập là bắt buộc.")]
+        public string UserName { get; set; }
+
         /// <example>admin@minierp.com</example>
         [Required(ErrorMessage = "Email là bắt buộc.")]
         [EmailAddress(ErrorMessage = "Định dạng Email không hợp lệ.")]
@@ -30,6 +34,9 @@ namespace MiniERP_API.Models.DTOs
         /// <example>System Administrator</example>
         [Required(ErrorMessage = "Họ và tên là bắt buộc.")]
         public string FullName { get; set; }
+
+        /// <example>Staff</example>
+        public string Role { get; set; }
     }
 
     public class UserPasswordChangeDto

@@ -26,6 +26,7 @@
                 <thead class="bg-body-tertiary">
                     <tr>
                         <th class="ps-4">Nhà cung cấp</th>
+                        <th>Người liên hệ</th>
                         <th>Liên hệ</th>
                         <th>Địa chỉ</th>
                         <th class="text-end pe-4">Thao tác</th>
@@ -60,6 +61,10 @@
                         <div id="detailEmail" class="fw-semibold fs-5 text-body"></div>
                     </div>
                     <div class="list-group-item px-0 py-3 border-0 bg-transparent">
+                        <label class="text-body-secondary small d-block text-uppercase mb-1">Người đại diện</label>
+                        <div id="detailContactPerson" class="fw-semibold fs-5 text-body"></div>
+                    </div>
+                    <div class="list-group-item px-0 py-3 border-0 bg-transparent">
                         <label class="text-body-secondary small d-block text-uppercase mb-1">Số điện thoại</label>
                         <div id="detailPhone" class="fw-semibold fs-5 text-body"></div>
                     </div>
@@ -90,6 +95,10 @@
                 <div class="mb-3">
                     <label class="form-label">Tên nhà cung cấp <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Người đại diện</label>
+                    <input type="text" class="form-control" id="contactPerson">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
@@ -130,6 +139,9 @@
                     <td class="ps-4">
                         <div class="fw-bold text-success">${s.name}</div>
                         <div class="small text-body-secondary">ID: ${s.id}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold">${s.contactPerson || '-'}</div>
                     </td>
                     <td>
                         <div class="small"><i class="cil-envelope-closed me-1"></i>${s.email || '-'}</div>
@@ -173,6 +185,7 @@
 
             document.getElementById('editId').value = s.id;
             document.getElementById('name').value = s.name;
+            document.getElementById('contactPerson').value = s.contactPerson || '';
             document.getElementById('email').value = s.email || '';
             document.getElementById('phone').value = s.phone || '';
             document.getElementById('address').value = s.address || '';
@@ -195,6 +208,7 @@
             document.getElementById('detailNameDisplay').innerText = s.name;
             document.getElementById('detailIdDisplay').innerText = s.id;
             document.getElementById('detailEmail').innerText = s.email || '-';
+            document.getElementById('detailContactPerson').innerText = s.contactPerson || '-';
             document.getElementById('detailPhone').innerText = s.phone || '-';
             document.getElementById('detailAddress').innerText = s.address || '-';
             
@@ -220,6 +234,7 @@
         const id = document.getElementById('editId').value;
         const data = {
             name: document.getElementById('name').value,
+            contactPerson: document.getElementById('contactPerson').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             address: document.getElementById('address').value

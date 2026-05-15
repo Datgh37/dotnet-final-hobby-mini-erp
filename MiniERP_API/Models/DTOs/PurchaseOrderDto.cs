@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MiniERP_API.Models.DTOs
 {
@@ -53,6 +54,7 @@ namespace MiniERP_API.Models.DTOs
     public class CreatePurchaseOrderDto
     {
         /// <example>1</example>
+        [Required(ErrorMessage = "Nhà cung cấp là bắt buộc.")]
         public int? SupplierId { get; set; }
         
         /// <example>2026-05-15T00:00:00Z</example>
@@ -64,18 +66,22 @@ namespace MiniERP_API.Models.DTOs
         /// <example>Nhập hàng bổ sung kho tháng 5</example>
         public string Notes { get; set; }
         
+        [Required(ErrorMessage = "Danh sách sản phẩm không được để trống.")]
         public List<CreatePurchaseOrderItemDto> Items { get; set; }
     }
 
     public class CreatePurchaseOrderItemDto
     {
         /// <example>1</example>
+        [Required(ErrorMessage = "Sản phẩm là bắt buộc.")]
         public int ProductId { get; set; }
         
         /// <example>50</example>
+        [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải ít nhất là 1.")]
         public int Quantity { get; set; }
         
         /// <example>85000</example>
+        [Range(0, double.MaxValue, ErrorMessage = "Đơn giá không được âm.")]
         public decimal UnitPrice { get; set; }
     }
 }
